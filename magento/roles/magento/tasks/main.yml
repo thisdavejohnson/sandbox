@@ -1,8 +1,4 @@
 ---
-- name: Create the installation directory
-  command: mkdir $webroot
-  creates: $webroot/$installdir
-
 - name: Download Magento
   get_url: url=http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz dest=/tmp/magento-1.7.0.2.tar.gz
 
@@ -29,24 +25,24 @@
 
 # FIXME
 - name: Import sample products
-  command: mysql -h $dbhost -u $dbuser -p$dbpass $dbname < data.sql
+  shell: mysql -h $dbhost -u $dbuser -p$dbpass $dbname < data.sql
 
 - name: Initialize PEAR registry
   command: pear mage-setup .
   
 - name: Initialize PEAR registry
-  command: ./mage config-set preferred_state stable
-	  
+  command: mage config-set preferred_state stable
+
 - name: Install core extensions
-  command: ./mage install http://connect20.magentocommerce.com/community Mage_All_Latest --force
-	  
+  command: mage install http://connect20.magentocommerce.com/community Mage_All_Latest --force
+ 
 - name: Refreshing indexes
   command: /usr/local/bin/php -f shell/indexer.php reindexall
   
 - name: Clean up
   command: rm -rf downloader/pearlib/cache/* downloader/pearlib/download/* magento/ magento-sample-data-1.6.1.0/ magento-1.7.0.2.tar.gz magento-sample-data-1.6.1.0.tar.gz data.sql *.sample *.txt data.sql
 
-- name: Install Magento	  
+- name: Install Magento
   command: php-cli -f install.php --
         --license_agreement_accepted "yes" \
         --locale "en_US" \
@@ -66,7 +62,7 @@
         --admin_email "$adminemail" \
         --admin_username "$adminuser" \
         --admin_password "$adminpass" \
-	  
+
 - name: Copying standalone.xml configuration file
   template: src=standalone.xml dest=/usr/share/jboss-as/standalone/configuration/
   notify: restart jboss
