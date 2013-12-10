@@ -34,7 +34,7 @@
 - name: Initialize PEAR registry
   command: pear mage-setup .
   
-- name: 
+- name: Initialize PEAR registry
   command: ./mage config-set preferred_state stable
 	  
 - name: Install core extensions
