@@ -1,0 +1,14 @@
+# Here are variables related to the Magento installation
+
+webroot: /var/www/html
+installdir: magento
+dbhost: localhost
+dbname: magento
+dbuser: magento
+dbpass: magento
+storeurl: url
+adminuser: admin
+adminpass: Magento
+adminfname: Store
+adminlname: Owner
+adminemail: root@localhost.localdomain
