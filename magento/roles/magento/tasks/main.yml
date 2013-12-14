@@ -4,7 +4,7 @@
 
 - name: Copy Apache configuration file
   copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf force=yes 
-  notify: restart httpd
+  notify: restart apache 
 
 - name: Start Apache Service
   service: name=httpd state=started enabled=true
