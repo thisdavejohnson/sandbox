@@ -4,8 +4,10 @@
 
 - name: Copy Apache configuration file
   copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf force=yes 
+  notify: restart httpd
 
-# Apache should be started here
+- name: Start Apache Service
+  service: name=httpd state=started enabled=true
 
 - name: Install MySQL Server
   yum: name={{item}} state=present
@@ -24,8 +26,6 @@
    - php-simplexml
    - php-dom
 
-# Apache may need to be restarted here
-
 - name: Start Mysql Service
   service: name=mysqld state=started enabled=true
 
@@ -34,9 +34,6 @@
 
 - name: Create DB User
   mysql_user: name=$dbuser password=$dbpass priv=*.*:ALL state=present
-
-- name: Start Apache Service
-  service: name=httpd state=started enabled=true
 
 - name: Download Magento
   get_url: url=http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz dest=/tmp/magento-1.7.0.2.tar.gz
