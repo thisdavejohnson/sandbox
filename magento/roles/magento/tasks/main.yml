@@ -60,7 +60,14 @@
   shell: chdir=$webroot mv -f magento/* magento/.htaccess .
 
 - name: Set permissions
+<<<<<<< HEAD
+  command: chmod 550 mage
+  
+- name: Set permissions
+  command: chmod -R 777 var/*
+=======
   command: chdir=$webroot chmod 550 mage
+>>>>>>> a0531631fe9c6adaffa50c69c67c8e90a803cd96
 
 # FIXME
 - name: Import sample products
