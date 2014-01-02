@@ -1,94 +1,119 @@
 ---
-- name: Create the installation directory
-  command: mkdir $webroot
-  creates: $webroot/$installdir
+- name: Install Apache
+  yum: name=httpd state=latest
+
+- name: Copy Apache configuration file
+  copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf force=yes 
+
+# Apache should be started here
+
+- name: Install MySQL Server
+  yum: name={{item}} state=present
+  with_items:
+   - mysql-server
+   - MySQL-python
+
+- name: Install PHP
+  yum: name={{item}} state=present
+  with_items:
+   - php
+   - php-pdo
+   - php-mysqli
+   - php-mcrypt
+#   - php-mhash
+   - php-simplexml
+   - php-dom
+
+# Apache may need to be restarted here
+
+- name: Start Mysql Service
+  service: name=mysqld state=started enabled=true
+
+- name: Create MySQL database for Magento
+  mysql_db: name=$dbname state=present
+
+- name: Create DB User
+  mysql_user: name=$dbuser password=$dbpass priv=*.*:ALL state=present
+
+- name: Start Apache Service
+  service: name=httpd state=started enabled=true
 
 - name: Download Magento
   get_url: url=http://www.magentocommerce.com/downloads/assets/1.7.0.2/magento-1.7.0.2.tar.gz dest=/tmp/magento-1.7.0.2.tar.gz
 
 - name: Extract Magento
-  command: chdir=$webroot /usr/bin/tar -xf /tmp/magento-1.7.0.2.tar.gz creates=$webroot/$installdir/magento
+  command: chdir=$webroot /bin/tar -xf /tmp/magento-1.7.0.2.tar.gz creates=$webroot/magento
   
 - name: Download sample data
   get_url: url=http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz dest=/tmp/magento-sample-data-1.6.1.0.tar.gz
 
 - name: Extract sample data
-  command: chdir=$webroot /usr/bin/tar -xf /tmp/magento-sample-data-1.6.1.0.tar.gz creates=$webroot/magento-sample-data-1.6.1.0
+  command: chdir=$webroot /bin/tar -xf /tmp/magento-sample-data-1.6.1.0.tar.gz creates=$webroot/magento-sample-data-1.6.1.0
 
 - name: Move sample data files
-  command: mv magento-sample-data-1.6.1.0/media/* magento/media/
+  shell: chdir=$webroot mv -f magento-sample-data-1.6.1.0/media/* magento/media/
 
 - name: Move sample data files
-  command: mv magento-sample-data-1.6.1.0/magento_sample_data_for_1.6.1.0.sql magento/data.sql
+  command: chdir=$webroot mv -f magento-sample-data-1.6.1.0/magento_sample_data_for_1.6.1.0.sql magento/data.sql
 
 - name: Move Magento installation files
-  command: mv magento/* magento/.htaccess .
+  shell: chdir=$webroot mv -f magento/* magento/.htaccess .
 
 - name: Set permissions
+<<<<<<< HEAD
   command: chmod 550 mage
   
 - name: Set permissions
   command: chmod -R 777 var/*
+=======
+  command: chdir=$webroot chmod 550 mage
+>>>>>>> a0531631fe9c6adaffa50c69c67c8e90a803cd96
 
 # FIXME
 - name: Import sample products
-  command: mysql -h $dbhost -u $dbuser -p$dbpass $dbname < data.sql
+  shell: chdir=$webroot mysql -h $dbhost -u $dbuser -p$dbpass $dbname < data.sql
 
 - name: Initialize PEAR registry
-  command: pear mage-setup .
+  command: chdir=$webroot ./mage mage-setup .
   
 - name: Initialize PEAR registry
-  command: ./mage config-set preferred_state stable
-	  
+  command: chdir=$webroot ./mage config-set preferred_state stable
+
 - name: Install core extensions
-  command: ./mage install http://connect20.magentocommerce.com/community Mage_All_Latest --force
-	  
-- name: Refreshing indexes
-  command: /usr/local/bin/php -f shell/indexer.php reindexall
+  command: chdir=$webroot ./mage install http://connect20.magentocommerce.com/community Mage_All_Latest --force
+ 
+#- name: Refreshing indexes
+#  command: chdir=$webroot /usr/bin/php -f shell/indexer.php reindexall
   
 - name: Clean up
-  command: rm -rf downloader/pearlib/cache/* downloader/pearlib/download/* magento/ magento-sample-data-1.6.1.0/ magento-1.7.0.2.tar.gz magento-sample-data-1.6.1.0.tar.gz data.sql *.sample *.txt data.sql
+  command: chdir=$webroot rm -rf downloader/pearlib/cache/* downloader/pearlib/download/* magento/ magento-sample-data-1.6.1.0/ magento-1.7.0.2.tar.gz magento-sample-data-1.6.1.0.tar.gz data.sql *.sample *.txt data.sql
 
-- name: Install Magento	  
-  command: php-cli -f install.php --
-        --license_agreement_accepted "yes" \
-        --locale "en_US" \
-        --timezone "America/Los_Angeles" \
-        --default_currency "USD" \
-        --db_host "$dbhost" \
-        --db_name "$dbname" \
-        --db_user "$dbuser" \
-        --db_pass "$dbpass" \
-        --url "$url" \
-        --use_rewrites "yes" \
-        --use_secure "no" \
-        --secure_base_url "" \
-        --use_secure_admin "no" \
-        --admin_firstname "$adminfname" \
-        --admin_lastname "$adminlname" \
-        --admin_email "$adminemail" \
-        --admin_username "$adminuser" \
-        --admin_password "$adminpass" \
-	  
-- name: Copying standalone.xml configuration file
-  template: src=standalone.xml dest=/usr/share/jboss-as/standalone/configuration/
-  notify: restart jboss
+- name: Install Magento
+  command: chdir=$webroot php -f install.php --
+        --license_agreement_accepted "yes" 
+        --locale "en_US" 
+        --timezone "America/Los_Angeles" 
+        --default_currency "USD" 
+        --db_host "$dbhost" 
+        --db_name "$dbname" 
+        --db_user "$dbuser" 
+        --db_pass "$dbpass" 
+        --url "$storeurl" 
+        --use_rewrites "yes" 
+        --use_secure "no" 
+        --secure_base_url "" 
+        --use_secure_admin "no" 
+        --admin_firstname "$adminfname" 
+        --admin_lastname "$adminlname" 
+        --admin_email "$adminemail" 
+        --admin_username "$adminuser" 
+        --admin_password "$adminpass" 
 
-- name: Add group "jboss"
-  group: name=jboss
+- name: Fix the Google Checkout bug
+  file: path=/var/www/html/app/code/core/Mage/GoogleCheckout/etc/{{ item }} state=absent
+  with_items:
+    - adminhtml.xml
+    - system.xml
+    - wsdl.xml
+    - wsi.xml
 
-- name: Add user "jboss"
-  user: name=jboss group=jboss home=/usr/share/jboss-as
-
-- name: Change ownership of JBoss installation
-  file: path=/usr/share/jboss-as/ owner=jboss group=jboss state=directory recurse=yes
-
-- name: Copy the init script
-  copy: src=jboss-as-standalone.sh dest=/etc/init.d/jboss mode=0755
-
-- name: Enable JBoss to be started at boot
-  service: name=jboss enabled=yes state=started 
-
-- name: deploy iptables rules
-  template: src=iptables-save dest=/etc/sysconfig/iptables
-  notify: restart iptables

@@ -6,9 +6,9 @@ dbhost: localhost
 dbname: magento
 dbuser: magento
 dbpass: magento
-storeurl: url
+storeurl: '{{ ansible_default_ipv4.address }}'
 adminuser: admin
-adminpass: Magento
+adminpass: Magento123
 adminfname: Store
 adminlname: Owner
-adminemail: root@localhost.localdomain
+adminemail: root@localhost.com
