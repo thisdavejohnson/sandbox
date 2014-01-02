@@ -26,6 +26,9 @@
 
 - name: Set permissions
   command: chmod 550 mage
+  
+- name: Set permissions
+  command: chmod -R 777 var/*
 
 # FIXME
 - name: Import sample products
