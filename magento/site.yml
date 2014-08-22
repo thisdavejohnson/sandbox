@@ -1,8 +1,0 @@
----
-# This playbook deploys a simple Magento server. 
-
-- hosts: magento-servers 
-  user: root
-
-  roles:
-    - magento
