@@ -1,0 +1,11 @@
+---
+# This playbook checks for the presence of a read-only filesystem
+- hosts: all 
+ 
+  tasks:
+  - name: Check for read-only filesystems 
+    shell: mount | grep '(ro' 
+    register: shell_result
+    changed_when: "'(ro' in shell_result.stdout"
+    ignore_errors: True
+

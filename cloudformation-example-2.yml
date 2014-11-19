@@ -1,0 +1,20 @@
+- name: provision stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+# Basic task example
+  tasks:
+  - name: launch ansible cloudformation example
+    cloudformation: >
+      stack_name="ansible-cloudformation" state=present
+      region=us-east-1 
+      disable_rollback=yes
+      template=files/cloudformation-example-autoscale.json
+    args:
+      template_parameters:
+        KeyName: djohnson
+        DiskType: ephemeral
+        InstanceType: m1.small
+        ClusterSize: 3
+    register: stack

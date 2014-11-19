@@ -1,0 +1,22 @@
+---
+ec2_access_key: 
+ec2_secret_key: 
+ec2_region:  
+ec2_zone: 
+ec2_image: 
+ec2_instance_type: 
+ec2_keypair: 
+ec2_security_group: default
+ec2_instance_count: 2
+ec2_tag:
+
+# need to separate out these RAX vars from the above
+rax_region:
+rax_image:
+rax_instance_count: 2
+
+# ditto for GCE
+gce_image: "dj_demo"
+gce_zone: "us-central1-f"
+gce_instance_count: 2
+gce_type:

@@ -1,0 +1,25 @@
+---
+- name: gather facts
+  hosts: all
+  gather_facts: true 
+
+  vars:
+    ec2_region: us-east-1
+
+  tasks:
+  - name: gather facts 
+    ec2_facts:
+
+- name: terminate hosts
+  hosts: all 
+  connection: local  
+
+  tasks:
+  - name: terminate EC2 hosts
+    ec2: >
+      region="{{ ec2_region }}"
+      instance_ids="{{ item }}"
+      state=absent
+      wait=True
+    with_items: hostvars[inventory_hostname]['ansible_ec2_instance_id'] 
+

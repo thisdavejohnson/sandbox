@@ -1,0 +1,26 @@
+---
+#Provision some instances:
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+  - group_vars/all
+ 
+  tasks:
+  - name: Launch webserver instances
+    gce: >
+     name="demo-webserver-10"
+     zone="{{ gce_zone }}"
+     machine_type="{{ gce_type }}"
+     image="{{ gce_image }}"
+     tags="{'ansible_group':'webservers'}"
+     count="{{ gce_instance_count }}"
+     state="present"
+     wait=true
+    register: gce 
+
+  - name: Wait for SSH to come up
+    local_action: wait_for host={{ item.public_ip }}
+      port=22 delay=60 timeout=320 state=started
+    with_items: gce.instance_data

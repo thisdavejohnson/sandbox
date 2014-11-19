@@ -1,0 +1,57 @@
+# vim: set tabstop=4 shiftwidth=4 expandtab
+#
+# This playbook deploys the JBoss Application Server
+
+- hosts: all
+  user: root
+      
+  # Install JBoss
+  tasks:
+
+  - name: Install Java 1.7
+    yum: name=java-1.7.0-openjdk state=installed
+
+  # What tense is preferred for the name of actions?
+  # How can I make these tasks idempotent?
+  #       somehow can mark that if /usr/share/jboss-as exists, don't do anything
+  #
+  # This download may be long running... check into async
+  #       would it be better to copy *to* to the system?  I don't think so.
+  - name: Download JBoss from jboss.org
+    command: chdir=/tmp /usr/bin/wget http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip creates=/tmp/jboss-as-7.1.1.Final.zip
+
+  # May be better to collect all of these "install" actions and call as a script or a single "transaction"?
+  - name: Extract archive
+    command: chdir=/usr/share /usr/bin/unzip -q /tmp/jboss-as-7.1.1.Final.zip creates=/usr/share/jboss-as
+
+  # Rename the dir to avoid encoding the version in the init script
+  - name: Rename install directory
+    command: chdir=/usr/share /bin/mv jboss-as-7.1.1.Final jboss-as creates=/usr/share/jboss-as
+
+  # Configure JBoss to listen on 0.0.0.0
+  - name: Copying standalone.xml configuration file
+    copy: src=/root/sandbox/standalone.xml dest=/usr/share/jboss-as/standalone/configuration/standalone.xml 
+
+  - name: Add group "jboss"
+    group: name=jboss
+
+  - name: Add user "jboss"
+    user: name=jboss group=jboss home=/usr/share/jboss-as
+
+  - name: Change ownership of JBoss installation
+    file: path=/usr/share/jboss-as/ owner=jboss group=jboss state=directory recurse=yes
+
+  # Need to clean up the local path
+  - name: Copy the init script
+    copy: src=/root/sandbox/jboss-as-standalone.sh dest=/etc/init.d/jboss mode=0755
+
+  - name: Enable JBoss to be started at boot
+    service: name=jboss enabled=yes state=started 
+
+  # Disable iptables until I stop being lazy and fix this
+  - name: Disable iptables
+    service: name=iptables state=stopped
+
+  # Add a iptables rules
+#  - name: Copy iptables rules
+#    copy: src=/root/sandbox/iptables.save dest=/etc/

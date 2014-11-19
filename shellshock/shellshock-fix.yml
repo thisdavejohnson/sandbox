@@ -1,0 +1,22 @@
+---
+# This playbook upgrades Bash to fix the Shellshock vulnerability 
+- hosts: all 
+ 
+  tasks:
+  - name: Check for Shellshock vulnerability
+    shell: env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
+    register: shell_result
+    changed_when: "'vulnerable' in shell_result.stdout"
+
+  - name: Update bash with yum
+    yum: name=bash state=latest
+    when: "'vulnerable' in shell_result.stdout"
+
+# This may not be neccessary for demo
+#  - name: Relink libraries
+#    command: /sbin/ldconfig
+
+  - name: Check for Shellshock vulnerability
+    shell: env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
+    register: shell_result
+    changed_when: "'vulnerable' in shell_result.stdout"

@@ -1,0 +1,10 @@
+---
+# This playbook checks for vulnerability to Shellshock
+- hosts: all 
+ 
+  tasks:
+  - name: Check for Shellshock vulnerability
+    shell: env x='() { :;}; echo vulnerable' bash -c "echo this is a test" 
+    register: shell_result
+    changed_when: "'vulnerable' in shell_result.stdout"
+

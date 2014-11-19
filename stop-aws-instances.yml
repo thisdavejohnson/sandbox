@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+#
+# Enforce that 5 instances with a tag "foo" are running
+#
+  vars:
+    instance_ids:
+      - 'i-xxxxxx'
+      - 'i-xxxxxx'
+      - 'i-xxxxxx'
+    ec2_region: us-east-1
+    ansible_group_tag: 'webservers'
+
+  tasks:
+  - name: Start the sandbox instances
+    ec2: >
+      region='{{ ec2_region }}'
+      instance_tags="{'ansible_group':'webservers'}"
+      state=running
+      wait=True

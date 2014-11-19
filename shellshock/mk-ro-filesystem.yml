@@ -1,0 +1,18 @@
+---
+# This playbook creates a read-only filesystem
+- hosts: all 
+ 
+  tasks:
+  - name: Create a temp file
+    command: dd if=/dev/zero of=/tmp/tmpfile bs=1024 count=1M
+
+  - name: Make the filesystem
+    command: mkfs -F /tmp/tmpfile
+
+  - name: Create a mount point
+    command: mkdir /mnt/tmp
+
+  - name: Mount the temp filesystem
+    command: mount /tmp/tmpfile /mnt/tmp -o loop,ro
+
+
