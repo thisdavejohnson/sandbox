@@ -5,7 +5,7 @@
 
   vars:
     ec2_region: us-east-1
-    ec2_hosts: tag_Name_demo-{{ tower_user_name }}
+	ec2_hosts: tag_Name_demo-{{ tower_user_name }}
 	
   tasks:
   - name: gather facts 
@@ -17,7 +17,7 @@
   connection: local  
 
   vars:
-    ec2_hosts: tag_Name_demo-{{ tower_user_name }}
+	ec2_hosts: tag_Name_demo-{{ tower_user_name }}
 
   tasks:
   - name: terminate EC2 hosts
