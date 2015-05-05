@@ -1,6 +1,6 @@
 ---
 - name: gather EC2 facts
-  hosts: {{ ec2_hosts }}
+  hosts: "{{ ec2_hosts }}"
   gather_facts: false 
 
   vars:
