@@ -1,0 +1,27 @@
+---
+- name: Test 
+  hosts: all 
+  gather_facts: false
+
+  tasks:
+#  - name: get facts about local host
+#    setup:
+
+  - name: echo a really large file to standard out
+    raw: "cat /var/log/messages-20140219"
+    register: foo
+
+  - debug: var=foo
+
+#  - name: write it out
+#    local_action: shell /bin/echo "{{ foo.stdout }}" > foo.txt
+
+  - name: write it out
+    local_action: template src=foo.j2 dest=/root/foo.txt
+#    connection: local
+
+#  - name: print some debug
+#    debug: var=hostvars[inventory_hostname] 
+
+#  - name: more debug
+#    debug: var={{ec2_ip_address}}
