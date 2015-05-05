@@ -1,7 +1,7 @@
 ---
-- name: gather facts
+- name: gather EC2 facts
   hosts: all
-  gather_facts: true 
+  gather_facts: false 
 
   vars:
     ec2_region: us-east-1
