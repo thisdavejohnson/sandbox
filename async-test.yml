@@ -1,0 +1,12 @@
+---
+- name: Test 
+  hosts: all 
+
+  tasks:
+  - name: run a really long task and poll for the status 
+    command: /bin/sleep 1814
+    async: 1814400
+    poll: 10
+
+
+

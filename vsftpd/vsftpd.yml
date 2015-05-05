@@ -1,0 +1,35 @@
+# This playbook installs VSFTPD
+---
+- hosts: all
+
+  vars:
+    customer_id: foo
+    dmz_id: bar
+    folder_structure: baz
+
+  tasks:
+  
+  - name: Install VSFTPd
+    yum: name=vsftpd
+
+    # Enable verbose logging
+  - name: Configure VSFTPd
+    template: src=vsftpd.j2 dest=/etc/vsftpd/vsftpd.conf
+    notify:
+    - restart vsftpd
+
+  - name: Enable Web FTP interface
+    command: /bin/true
+  
+  - name: Establish NFS mounts to appropriate back-end systems
+    mount: name=/srv/disk src='LABEL=SOME_LABEL' fstype=ext4 state=present
+
+  - name: Register deployments with external inventory database
+    command: /bin/true
+
+  - name: Enable the service
+    service: name=vsftpd state=started
+
+  handlers:
+    - name: restart vsftpd
+      service: name=vsftpd state=restarted 

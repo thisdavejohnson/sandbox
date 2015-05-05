@@ -7,7 +7,7 @@
 - name: launch instances
   hosts: localhost
   connection: local
-  gather_facts: False
+#  gather_facts: False
  
   tasks:
 
@@ -15,7 +15,17 @@
       vcenter_hostname: 162.223.13.228
       username: djohnson
       password: bP8StCu9mhYe
-      guest: newvm001
+      guest: demo-dj-from-template
+      from_template: yes
+      template_src: demo-dj-template
+#      cluster: MainCluster
+      resource_pool: "/Resources"
+
+  - vsphere_guest:
+#      vcenter_hostname: 162.223.13.228
+#      username: djohnson
+#      password: bP8StCu9mhYe
+      guest: demo-dj-from-template
       state: powered_on
       vm_extra_config:
         vcpu.hotadd: yes

@@ -1,13 +1,35 @@
 ---
-#Provision some instances:
-- hosts: localhost
-  connection: local
-  gather_facts: False
+- name: gather facts
+  hosts: all
+  gather_facts: true 
 
   vars_files:
   - group_vars/all
  
   tasks:
+  - name: gather facts 
+    ec2_facts:
+
+- name: terminate hosts
+  hosts: all 
+  connection: local  
+
+  tasks:
+  - name: terminate EC2 hosts
+    ec2: >
+      region="{{ ec2_region }}"
+      instance_ids="{{ item }}"
+      state=absent
+      wait=True
+    with_items: hostvars[inventory_hostname]['ansible_ec2_instance_id'] 
+
+- name: launch hosts
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+  #Provision some instances:
   - name: Launch webserver instances
     ec2: >
      access_key="{{ ec2_access_key }}"
@@ -17,7 +39,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_webservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-web-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'webservers', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-web'}"
      count="{{ ec2_instance_count }}"
      wait=true
     register: ec2
@@ -31,7 +53,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_dbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-db-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'dbservers', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-db'}"
      count="1"
      wait=true
     register: ec2
@@ -45,7 +67,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_lbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-haproxy-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'lbservers', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-haproxy'}"
      count="1"
      wait=true
     register: ec2
@@ -59,7 +81,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_monitoring }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-nagios-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'monitoring', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-nagios'}"
      count="1"
      wait=true
     register: ec2
@@ -69,3 +91,13 @@
     local_action: wait_for host={{ item.public_dns_name }}
       port=22 delay=60 timeout=320 state=started
     with_items: ec2.instances
+
+  - name: Sync Tower inventory
+    connection: local
+    command: tower-cli group sync --monitor --timeout 10 3
+    ignore_errors: true
+
+    tags:
+      - sync
+
+  
