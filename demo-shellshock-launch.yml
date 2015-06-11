@@ -1,5 +1,5 @@
 ---
-#Provision some instances:
+# Provision instances for the Shellshock demo:
 - hosts: localhost
   connection: local
   gather_facts: False
@@ -7,6 +7,7 @@
   vars_files:
   - group_vars/all
  
+ # Tag the instances with the username of the Tower user
   tasks:
   - name: Launch shellshock instances
     ec2: >
@@ -17,7 +18,7 @@
      type="{{ ec2_instance_type }}"
      image="ami-6c1e8f04"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'shellshock', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-shellshock'}"
+     instance_tags="{'ansible_group':'shellshock', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-shellshock-''{{ tower_user_name }}'}"
      count="{{ ec2_instance_count }}"
      wait=true
     register: ec2
@@ -31,7 +32,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'shellshock', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-dj-shellshock'}"
+     instance_tags="{'ansible_group':'shellshock', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-shellshock-''{{ tower_user_name }}'}"
      count="1"
      wait=true
     register: ec2
