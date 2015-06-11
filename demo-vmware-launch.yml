@@ -13,8 +13,6 @@
 
   - vsphere_guest:
       vcenter_hostname: 162.223.13.228
-      username: {{ vmware_username }} 
-      password: {{ vmware_password }}
       guest: demo-dj-from-template
       from_template: yes
       template_src: demo-dj-template

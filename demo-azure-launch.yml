@@ -1,0 +1,28 @@
+---
+#Provision some instances:
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+  - group_vars/all
+ 
+  tasks:
+  - name: Launch demo instances
+    azure: > 
+     name="demo-dj"
+     role_size="Small"
+     image="b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20150123-en-us-30GB" 
+     location="West US"
+     user="azureuser" 
+     password="ANSIBLEcowsay1"
+     storage_account="portalvhds21n40tdbmm5r4"
+     wait="true"
+    register: azure
+
+#  - name: Debug
+#    debug: var=azure
+
+  - name: Wait for SSH to come up
+    local_action: wait_for host={{ azure.public_dns_name }}
+      port=22 delay=60 timeout=320 state=started
