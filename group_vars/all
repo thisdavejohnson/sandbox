@@ -8,6 +8,7 @@ ec2_instance_type: m1.small
 ec2_keypair: djohnson 
 ec2_security_group: default
 ec2_instance_count: 3
+ec2_tag: foo
 ec2_tag_webservers: webservers
 ec2_tag_dbservers: dbservers
 ec2_tag_lbservers: lbservers
