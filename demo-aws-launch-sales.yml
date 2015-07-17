@@ -17,7 +17,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'{{ ec2_tag }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
      count="{{ ec2_instance_count }}"
      wait=true
     register: ec2
