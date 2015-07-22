@@ -15,6 +15,7 @@ ec2_tag_lbservers: lbservers
 ec2_tag_monitoring: monitoring
 ec2_tag_name_prefix: dj
 ec2_hosts: all
+wait_for_port: 22
 
 # need to separate out these RAX vars from the above
 rax_region:
