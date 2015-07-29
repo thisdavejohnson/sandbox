@@ -17,7 +17,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_webservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'{{ ec2_tag_webservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo_''{{ tower_user_name }}'}"
      count="{{ ec2_instance_count }}"
      wait=true
     register: ec2
@@ -31,7 +31,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_dbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'{{ ec2_tag_dbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo_''{{ tower_user_name }}'}"
      count="1"
      wait=true
     register: ec2
@@ -45,7 +45,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_lbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'{{ ec2_tag_lbservers }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo_''{{ tower_user_name }}'}"
      count="1"
      wait=true
     register: ec2
@@ -59,7 +59,7 @@
      type="{{ ec2_instance_type }}"
      image="{{ ec2_image }}"
      region="{{ ec2_region }}"
-     instance_tags="{'ansible_group':'{{ ec2_tag_monitoring }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo-''{{ tower_user_name }}'}"
+     instance_tags="{'ansible_group':'{{ ec2_tag_monitoring }}', 'type':'{{ ec2_instance_type }}', 'group':'{{ ec2_security_group }}', 'Name':'demo_''{{ tower_user_name }}'}"
      count="1"
      wait=true
     register: ec2
