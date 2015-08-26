@@ -1,0 +1,10 @@
+---
+- name: Test Docker 
+  hosts: all 
+  connection: local
+
+  tasks:
+  - name: start a container 
+#    docker: name="web" image="webserver_simple" state="started" 
+    docker: name="web" image="webserver_simple" state="started" docker_url="tcp://192.168.99.100:2376" 
+# docker: docker_url="192.168.99.100"
