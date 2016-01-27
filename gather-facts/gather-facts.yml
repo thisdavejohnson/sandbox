@@ -1,0 +1,47 @@
+---
+- name: Gather facts across inventory (RHEL 5 only, for now) 
+  hosts: all 
+  gather_facts: false
+
+  tasks:
+
+  - name: Install the yum repo for Puppet for RHEL (for facter)
+    yum: 
+      name: http://yum.puppetlabs.com/puppetlabs-release-pc1-el-5.noarch.rpm
+      state: installed
+      disable_gpg_check: yes
+
+  - name: Make sure facter is installed 
+    yum:
+      name: "{{ item }}" 
+      state: latest
+    with_items:
+     - facter
+#     - ruby-json
+
+  - name: Gather facts
+    setup:
+    environment: 
+      PATH: /opt/puppetlabs/bin 
+
+#  - name: Print the facts from Ansible setup
+#    debug: 
+#      var: hostvars[inventory_hostname] 
+
+  - name: Gather the list of packages...
+    yum:
+      list: installed
+    register: packages
+
+  - name: ...Done
+    set_fact:
+      installed_packages: "{{ packages.results }}"
+
+  - name: Write a report of installed packages for each host
+    local_action: template src=host-report.j2 dest=/root/host-report-{{ inventory_hostname  }}.csv
+    connection: local
+
+  - name: Write the aggregated inventory report 
+    local_action: template src=inventory-report.j2 dest=/root/inventory-report.csv
+    connection: local
+

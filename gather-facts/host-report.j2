@@ -1,0 +1,4 @@
+Name,Version
+{% for package in installed_packages %}
+  {{ package.name }},{{ package.version }}
+{% endfor %}
